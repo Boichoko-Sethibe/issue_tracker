@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:issue_tracker/Screens/add_issue.dart';
+import 'package:issue_tracker/Screens/issues.dart';
+import 'package:issue_tracker/Screens/resolved_issues.dart';
+
+// import '../Class/issue.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +30,30 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: Text("Add Issue"),
             ),
+            SizedBox(height: 200),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewIssues(),
+                  ),
+                );
+              },
+              child: Text("View Issues"),
+            ),
+            SizedBox(height: 200),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResolvedIssues(),
+                  ),
+                );
+              },
+              child: Text("View Resolved Issues"),
+            )
           ],
         ),
       ),
