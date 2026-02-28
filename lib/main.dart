@@ -10,6 +10,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: "Issue Tracker",home: HomeScreen(),);
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        primaryIconTheme: const IconThemeData(color: Colors.blue),
+        buttonTheme: const ButtonThemeData(
+          buttonColor: Colors.blue,
+          textTheme: ButtonTextTheme.primary,
+        ),
+      ),
+      title: "Issue Tracker",
+      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

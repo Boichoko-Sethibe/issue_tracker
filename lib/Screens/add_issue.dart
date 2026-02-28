@@ -11,7 +11,6 @@ class AddIssue extends StatefulWidget {
 }
 
 class _AddIssueState extends State<AddIssue> {
-  final Issue _issue = Issue();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -26,58 +25,104 @@ class _AddIssueState extends State<AddIssue> {
   void _submitIssue() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    _issue.title = _titleController.text;
-    _issue.description = _descriptionController.text;
+    final newIssue = Issue(
+      title: _titleController.text,
+      description: _descriptionController.text,
+      dateCreated: DateTime.now(),
+    );
 
-    IssueManager().addIssue(_issue);
+    IssueManager().addIssue(newIssue);
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) => ViewIssues()));
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => ViewIssues()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(child: Column(
-        children: [
-          Form(key: _formKey,
-            child:   Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: "Issue Subject"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an issue subject';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: "Issue Description"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an issue description';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _submitIssue,
-                child: Text("Submit Issue"),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Add Issue"), backgroundColor: Colors.blue),
+      body: Center(
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          padding: EdgeInsets.all(16),
+          margin: EdgeInsets.symmetric(horizontal: 24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withValues(),
+                blurRadius: 8,
+                offset: Offset(0, 4),
               ),
             ],
-          ),),
-          SizedBox(height: 100),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text("Go Back"),
           ),
-        ],
-      ),),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Enter Issue Details", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                SizedBox(height: 20),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          labelText: "Issue Subject",
+                          border: UnderlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an issue subject';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: "Describe the issue",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        maxLines: 4,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an issue description';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _submitIssue,
+                  child: Text("Submit Issue"),
+                ),
+                SizedBox(height: 24),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Go Back"),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

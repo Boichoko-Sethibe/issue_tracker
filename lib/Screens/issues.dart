@@ -41,7 +41,7 @@ class _ViewIssuesState extends State<ViewIssues> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  _issues[index].status = selected;
+                  IssueManager().updateStatus(index, selected);
                 });
                 Navigator.pop(context);
               },
@@ -68,7 +68,7 @@ class _ViewIssuesState extends State<ViewIssues> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  IssueManager().issues.removeAt(index);
+                  IssueManager().removeAt(index);
                 });
                 Navigator.pop(context);
               },
@@ -82,36 +82,68 @@ class _ViewIssuesState extends State<ViewIssues> {
 
   @override
   Widget build(BuildContext context) {
-    final issues = _issues;
-
+    final issues = _issues.where( (issue) => issue.status == "Open" || issue.status == "In Progress").toList();
     return Scaffold(
-      appBar: AppBar(title: Text('Issues')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text("Issues"),backgroundColor: Colors.blue,),
       body: Center(
-        child: issues.isEmpty
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('No issues submitted yet.'),
-                  SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Go Back'),
-                  ),
-                ],
-              )
-            : ListView.builder(
-                itemCount: issues.length,
-                itemBuilder: (context, index) {
-                  final issue = issues[index];
-                  return ListTile(
-                    title: Text('Issue Title: ${issue.title}'),
-                    subtitle: Text(issue.description),
-                    trailing: Text('Status: ${issue.status}'),
-                    onTap: () => _changeStatusDialog(index),
-                    onLongPress: () => _deleteIssueDialog(index),
-                  );
-                },
-              ),
+        child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: issues.isEmpty
+              ? Column(
+                  key: ValueKey('empty'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('No issues submitted yet.'),
+                    SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Go Back'),
+                    ),
+                  ],
+                )
+              : ListView.builder(
+                  key: ValueKey('list'),
+                  itemCount: issues.length,
+                  itemBuilder: (context, index) {
+                    final issue = issues[index];
+                    Color bgColor;
+                    switch (issue.status) {
+                      case 'In Progress':
+                        bgColor = Colors.orange.shade50;
+                        break;
+                      case 'Resolved':
+                        bgColor = Colors.green.shade50;
+                        break;
+                      default:
+                        bgColor = Colors.white;
+                    }
+                    return AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        title: Text('Issue Title: ${issue.title}'),
+                        subtitle: Text(issue.description),
+                        trailing: Text('Status: ${issue.status}'),
+                        leading: Text(issue.dateCreated.toLocal().toIso8601String().split('T')[0]),
+                        onTap: () => _changeStatusDialog(index),
+                        onLongPress: () => _deleteIssueDialog(index),
+                      ),
+                    );
+                  },
+                ),
+        ),
       ),
     );
   }
