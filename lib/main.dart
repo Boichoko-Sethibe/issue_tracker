@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:issue_tracker/Class/issue_manager.dart';
 import 'package:issue_tracker/Screens/home.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await IssueManager().init();
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => IssueManager(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,14 +20,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryIconTheme: const IconThemeData(color: Colors.blue),
-        buttonTheme: const ButtonThemeData(
-          buttonColor: Colors.blue,
-          textTheme: ButtonTextTheme.primary,
-        ),
-      ),
       title: "Issue Tracker",
       home: HomeScreen(),
       debugShowCheckedModeBanner: false,
